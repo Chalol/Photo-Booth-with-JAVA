@@ -2,7 +2,7 @@
 
 Mini - Project for 010123131 Software Development Practice I
 
-By 6001012630021  Chanakan  Thimkham and 6001012620076  Chaninat  Boonsiri
+By 6001012630021  Chanakan  Thimkham and [https://github.com/toystory98](6001012620076  Chaninat  Boonsiri)
 #
 
 Ref of code **Thank you** :
