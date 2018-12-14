@@ -1,0 +1,137 @@
+/** 
+ * This code about to take a photo with Idol you like
+ * Mini-project for 010123131 Software Development Practice I
+ * 
+ * Code by 6001012630021  Chanakan  Thimkham
+ *         6001012620076  Chaninat  Boonsiri 
+
+ **/
+
+
+import com.googlecode.javacv.cpp.opencv_core.IplImage;
+import com.googlecode.javacv.cpp.opencv_highgui;
+import com.googlecode.javacv.cpp.opencv_highgui.CvCapture;
+import java.awt.Component;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.tree.DefaultMutableTreeNode;
+import project.Project;
+import project.payment_frame;
+import static com.googlecode.javacv.cpp.opencv_core.cvFlip;
+import java.awt.Color;
+import javax.swing.JTabbedPane;
+import javax.swing.JTree;
+import javax.swing.tree.DefaultTreeCellRenderer;
+
+
+
+
+
+public class projectGUI extends javax.swing.JFrame {
+    memberdata memberdata;
+    customerdata customerdata;
+    String key;
+    String name;
+    String email;
+    String address;
+    private Icon icon;
+    private ImageIcon imageIcon;
+    private JTree tree2;
+    private Object tree;
+    private int index;
+
+
+    public projectGUI() {
+        initComponents();
+    }
+
+
+    // SELECT IDOL
+    private void selectboxMouseClicked(java.awt.event.MouseEvent evt) {                                       
+        
+        DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) selectbox.getSelectionPath().getLastPathComponent();
+        key = selectedNode.getUserObject().toString();
+        ImageIcon a = new ImageIcon(memberdata.main(key,0));
+        picture.setText("");
+        picture.setIcon(a);
+        jLabel6.setText(memberdata.main(key,1));
+    
+    }                                      
+                                           
+    // SELECT IDOL AND OPEN CAMERA
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {                                         
+
+        String border = jLabel6.getText().toString();
+        ImageIcon icon = new ImageIcon(memberdata.main(key,2));
+        Thread webcam;
+        webcam = new Thread() {
+            public void run() {
+
+                CvCapture capture = opencv_highgui.cvCreateCameraCapture(0);
+                IplImage grabbedImage = opencv_highgui.cvQueryFrame(capture);
+
+               jLabel5.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 498,icon));
+                while ((grabbedImage = opencv_highgui.cvQueryFrame(capture)) != null) {
+                        Image image = grabbedImage.getBufferedImage();
+                        jLabel5.setIcon(new ImageIcon(image));
+
+                        try {
+                            Thread.sleep(80);
+                        } catch (InterruptedException ex) {
+                            Logger.getLogger(Project.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+
+                       }
+                }
+        };
+        webcam.start();
+    }                                        
+
+    // TAKE A PHOTO AND SAVE IT TO PROJECT FLODER
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {                                         
+        
+        try {
+            SaveScreenShot(jLabel5,"finalpic.png");
+            
+        } catch (Exception ex) {
+            Logger.getLogger(projectGUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        ImageIcon finalpic = new ImageIcon("C:\\Users\\chanakanT\\Documents\\work\\Software\\Project\\Project\\finalpic.png");
+        Image refinalpic = finalpic.getImage().getScaledInstance(374, 300, Image.SCALE_DEFAULT);
+        finalpic  = new ImageIcon(refinalpic);
+        jLabel7.setIcon(finalpic);
+    }                                        
+
+    // ADD DETAIL TO JSON FILE AND POP UP QRCODE
+    private void buy_btActionPerformed(java.awt.event.ActionEvent evt) {                                       
+        projectGUI.this.setVisible(false);
+        name = jTextField4.getText().toString();
+        address = jTextField3.getText().toString();
+        email = jTextField2.getText().toString();
+        customerdata.main(name,email,address);
+        payment_frame s =new payment_frame();
+        s.setVisible(true);
+    } 
+   
+    // FUNCTION FOR CODE
+    public static BufferedImage getScreenShot(Component component){
+        
+       BufferedImage image = new BufferedImage(component.getWidth(),component.getHeight(),BufferedImage.TYPE_INT_RGB);
+       component.paint(image.getGraphics());
+        return image;
+    }
+   public static void SaveScreenShot(Component component,String filename) throws Exception{
+       
+       BufferedImage img = getScreenShot(component);
+       ImageIO.write(img, "png", new File(filename));
+     
+   }
+   
